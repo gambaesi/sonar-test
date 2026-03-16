@@ -1,10 +1,12 @@
 package com.example.demo;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.sql.*;
 
+@Log4j2
 @RestController
 public class BadController {
 
@@ -25,6 +27,8 @@ public class BadController {
             Thread.sleep(1000);
         } catch (Exception e) {
             // 아무것도 안 함 (SonarCloud가 매우 싫어함)
+            log.error("Error occurred", e);
+            Thread.currentThread().interrupt();
         }
     }
 }
