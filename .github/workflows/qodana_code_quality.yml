@@ -18,9 +18,10 @@ jobs:
       checks: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # 최신 v4 권장
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          # PR일 경우 head SHA를, 아닐 경우 기본 checkout을 수행하도록 유연하게 설정
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       # 🔹 Java 17 설치 (추가)
@@ -29,12 +30,12 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: 'gradle' # Gradle 종속성 캐싱 추가 (속도 향상)
 
       # 🔹 Qodana 실행
       - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2025.3
-        with:
-          pr-mode: false
+        uses: JetBrains/qodana-action@v2024.1 # 안정적인 v2024.1 권장 (필요시 v2025.3 유지)
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1817712494 }}
-          QODANA_ENDPOINT: https://qodana.cloud
+          # 💡 중요: Gradle이 시스템 JDK를 사용하도록 강제하는 옵션 주입
+          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
